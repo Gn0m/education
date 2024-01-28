@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.bank_account.BankAccount;
 import com.example.demo.barrier.ComplexTaskExecutor;
 import com.example.demo.blocking.BlockingQueue;
 import com.example.demo.blocking.Consumer;
@@ -27,26 +28,87 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
 
-        //Практическое задание - StringBuilder
-        stringbuilder();
-        //Практическое задание - Collection - фильтрация
-        collectionFilter();
-        //Практическое задание - Collection - count of elements
-        countsOfElement(new int[]{1, 2, 1, 3, 5, 0, 1, 3, 7, 5, 5, 5, 4, 2});
-        //Практическая задача - Concurrency - блокирующая очередь
-        blockingQ();
-        //Практическая задача - Concurrency - многопоточный банковский счет
-        /* проёб */
-        //Практическое задание - Concurrency
-        deadlock();
-        //Практическое задание - Concurrency - синхронизаторы
-        complexTasks();
-        //Практическое задание - Stream API - генерация чисел
-        notebooks();
-        //Практическое задачние - Stream API - агрегация и объединение результатов
-        students();
-        //Практическое задание - Stream API - ForkJoinPool: Рекурсивное вычисление факториала
-        factorial();
+//        //Практическое задание - StringBuilder
+//        stringbuilder();
+//        //Практическое задание - Collection - фильтрация
+//        collectionFilter();
+//        //Практическое задание - Collection - count of elements
+//        countsOfElement(new int[]{1, 2, 1, 3, 5, 0, 1, 3, 7, 5, 5, 5, 4, 2});
+//        //Практическая задача - Concurrency - блокирующая очередь
+//        blockingQ();
+//        //Практическая задача - Concurrency - многопоточный банковский счет
+//        bankAccount();
+//        //Практическое задание - Concurrency
+//        deadlock();
+//        //Практическое задание - Concurrency - синхронизаторы
+//        complexTasks();
+//        //Практическое задание - Stream API - генерация чисел
+//        notebooks();
+//        //Практическое задачние - Stream API - агрегация и объединение результатов
+//        students();
+//        //Практическое задание - Stream API - ForkJoinPool: Рекурсивное вычисление факториала
+//        factorial();
+    }
+
+    private static void bankAccount() {
+        /*
+        Создайте класс BankAccount, представляющий банковский счет. Реализуйте методы deposit для внесения средств на счет и withdraw для снятия средств.
+        Класс BankAccount должен содержать синхронизированные методы deposit и withdraw для обеспечения правильной синхронизации доступа к банковскому счету.
+        Реализуйте метод getBalance, возвращающий текущий баланс счета.
+        Создайте несколько потоков, представляющих различных клиентов банка, и дайте им возможность одновременно вносить и снимать деньги со счета.
+        Предусмотрите сценарии, когда один поток пытается снять средства, когда на счете недостаточно средств.
+         */
+        BankAccount account = new BankAccount();
+
+        Thread depositThread1 = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                account.deposit(100);
+                System.out.println("Deposited: " + account.getBalance());
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        Thread depositThread2 = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                account.deposit(150);
+                System.out.println("Deposited: " + account.getBalance());
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        Thread withdrawThread = new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                account.withdraw(80);
+                System.out.println("Withdrawn: " + account.getBalance());
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        // Запуск потоков
+        depositThread1.start();
+        depositThread2.start();
+        withdrawThread.start();
+
+        try {
+            // Даем потокам время выполниться
+            depositThread1.join();
+            depositThread2.join();
+            withdrawThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private static void factorial() {
@@ -148,9 +210,13 @@ public class DemoApplication {
     Прежде чем приступать - прочитайте про паттерн state и примените его в своей реализации. */
 
         MyBuilder str = new MyBuilder("hello");
-        str.concat("world");
-        str.concat("hippie");
+        System.out.println(str);
+        str.concat(" world");
+        System.out.println(str);
+        str.concat(" people");
+        System.out.println(str);
         str.undo();
+        System.out.println(str);
     }
 
     private static Object[] filter(int[] arr, Filter filter) {
@@ -213,6 +279,7 @@ public class DemoApplication {
         Thread consumerT = new Thread(consumer);
         consumerT.setName("consumer");
         consumerT.start();
+
     }
 
     private static void deadlock() {

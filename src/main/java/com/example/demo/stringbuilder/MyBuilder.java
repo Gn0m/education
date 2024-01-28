@@ -2,26 +2,27 @@ package com.example.demo.stringbuilder;
 
 public class MyBuilder {
 
-    private StringConstructor constructor = new StringConstructorImpl();
+    private State state;
 
-    public MyBuilder(String string) {
-        constructor.concat(string, this);
+    public MyBuilder(String s) {
+        state = new StartString(this, s);
     }
 
+
     public void concat(String s) {
-        constructor.concat(s, this);
+        state.concat(s);
     }
 
     public void undo() {
-        constructor.undo();
+        state.undo();
     }
 
     @Override
     public String toString() {
-        return constructor.toString();
+        return state.toString();
     }
 
-    protected void setConstructor(StringConstructor constructor) {
-        this.constructor = constructor;
+    protected void setState(State state) {
+        this.state = state;
     }
 }
