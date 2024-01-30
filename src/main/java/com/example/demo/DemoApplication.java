@@ -41,7 +41,7 @@ public class DemoApplication {
 //        //Практическое задание - Concurrency
 //        deadlock();
 //        //Практическое задание - Concurrency - синхронизаторы
-//        complexTasks();
+        complexTasks();
 //        //Практическое задание - Stream API - генерация чисел
 //        notebooks();
 //        //Практическое задачние - Stream API - агрегация и объединение результатов
@@ -179,7 +179,7 @@ public class DemoApplication {
         Затем используйте CyclicBarrier для ожидания завершения всех потоков и объединения результатов их работы.
         В методе main создайте экземпляр ComplexTaskExecutor и вызовите метод executeTasks с несколькими задачами для выполнения.
          */
-        ComplexTaskExecutor taskExecutor = new ComplexTaskExecutor();
+        ComplexTaskExecutor taskExecutor = new ComplexTaskExecutor(5);
 
         Runnable testRunnable = () -> {
             log.info(Thread.currentThread().getName() + " started the test.");

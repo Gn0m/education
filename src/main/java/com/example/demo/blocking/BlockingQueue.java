@@ -11,56 +11,64 @@ public class BlockingQueue {
     private int get = 0;
     private int put = 0;
     private final Task[] tasks = new Task[LENGTH];
+    private final Object enqueue = new Object();
+    private final Object dequeue = new Object();
 
 
-    public synchronized void enqueue() {
+    public void enqueue() {
 
-        while (size >= 5) {
-            try {
-                log.info(Thread.currentThread().getName() + " awaits");
-                wait();
-            } catch (InterruptedException ex) {
-                log.warn("Interrupted ", ex);
-                Thread.currentThread().interrupt();
+        synchronized (enqueue) {
+            while (size >= 5) {
+                try {
+                    log.info(Thread.currentThread().getName() + " awaits");
+                    enqueue.wait();
+                } catch (InterruptedException ex) {
+                    log.warn("Interrupted ", ex);
+                    Thread.currentThread().interrupt();
+                }
             }
         }
+        synchronized (dequeue) {
+            Task task = new Task();
+            log.info(task + " added");
+            tasks[put] = task;
+            put++;
+            size++;
 
-        Task task = new Task();
-        log.info(task + " added");
-        tasks[put] = task;
-        put++;
-        size++;
-
-        if (put == 5) {
-            put = 0;
+            if (put == 5) {
+                put = 0;
+            }
+            dequeue.notifyAll();
         }
-        notifyAll();
     }
 
 
     @SneakyThrows
-    public synchronized void dequeue() {
+    public void dequeue() {
         Task task;
 
-        while (size < 1) {
-            try {
-                log.info(Thread.currentThread().getName() + " awaits");
-                wait();
-            } catch (InterruptedException ex) {
-                log.warn("Interrupted: ", ex);
-                Thread.currentThread().interrupt();
+        synchronized (dequeue) {
+            while (size < 1) {
+                try {
+                    log.info(Thread.currentThread().getName() + " awaits");
+                    dequeue.wait();
+                } catch (InterruptedException ex) {
+                    log.warn("Interrupted: ", ex);
+                    Thread.currentThread().interrupt();
+                }
             }
         }
+        synchronized (enqueue) {
+            task = tasks[get];
+            log.info(task + " received");
+            tasks[get] = null;
+            get++;
+            size--;
 
-        task = tasks[get];
-        log.info(task + " received");
-        tasks[get] = null;
-        get++;
-        size--;
-
-        if (get == 5)
-            get = 0;
-        notifyAll();
+            if (get == 5)
+                get = 0;
+            enqueue.notifyAll();
+        }
     }
 
 

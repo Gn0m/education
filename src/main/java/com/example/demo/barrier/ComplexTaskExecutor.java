@@ -6,29 +6,23 @@ import java.util.Random;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class ComplexTaskExecutor implements Runnable {
 
-    private final ExecutorService executorService;
     private final Random r = new Random();
+    private final CyclicBarrier barrier;
 
-    public ComplexTaskExecutor() {
-        executorService = Executors.newCachedThreadPool();
+    public ComplexTaskExecutor(int numberOfTasks) {
+        barrier = new CyclicBarrier(numberOfTasks, this);
     }
 
     public void executeTasks(int numberOfTasks) {
-        CyclicBarrier barrier = new CyclicBarrier(numberOfTasks, this);
-        for (int i = 0; i < numberOfTasks; i++) {
-            executorService.execute(new ComplexTask(barrier));
-        }
 
-        try {
-            executorService.shutdown();
-            executorService.awaitTermination(24L, TimeUnit.HOURS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        try(ExecutorService executorService = Executors.newFixedThreadPool(numberOfTasks)){
+            for (int i = 0; i < numberOfTasks; i++) {
+                executorService.execute(new ComplexTask(barrier));
+            }
         }
 
     }

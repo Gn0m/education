@@ -17,22 +17,24 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.UserDetails.class)
+    @JsonView({Views.UserDetails.class,Views.OrderDetails.class})
     private long id;
-    @JsonView(Views.UserDetails.class)
+    @JsonView({Views.UserDetails.class,Views.OrderDetails.class})
     private String name;
-    @JsonView(Views.UserDetails.class)
+    @JsonView({Views.UserDetails.class,Views.OrderDetails.class})
     private BigDecimal price;
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name="order_id")
     private Order order;
 
     public Product() {
     }
 
-    public Product(String name, BigDecimal price) {
+    public Product(String name, BigDecimal price,Order order) {
         this.name = name;
         this.price = price;
+        this.order = order;
     }
 
     @Override
@@ -46,5 +48,15 @@ public class Product {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, price);
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", order=" + order +
+                '}';
     }
 }

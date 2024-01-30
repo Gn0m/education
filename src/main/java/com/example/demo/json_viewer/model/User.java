@@ -8,9 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,27 +20,27 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.UserSummary.class, Views.UserDetails.class})
+    @JsonView({Views.UserSummary.class, Views.UserDetails.class,Views.OrderDetails.class})
     private long id;
-    @JsonView({Views.UserSummary.class, Views.UserDetails.class})
+    @JsonView({Views.UserSummary.class, Views.UserDetails.class,Views.OrderDetails.class})
     @NotNull(message = "name not null")
     private String name;
-    @JsonView({Views.UserSummary.class, Views.UserDetails.class})
+    @JsonView({Views.UserSummary.class, Views.UserDetails.class,Views.OrderDetails.class})
     @Email(message = "email not valid")
     @NotNull(message = "email not null")
     private String email;
-    @JsonView({Views.UserDetails.class, Views.UserDetails.class})
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Order> orders;
+    @JsonView(Views.UserDetails.class)
+    @OneToMany(mappedBy = "user")
+    private Set<Order> orders;
 
     public User(String name, String email) {
         this.name = name;
         this.email = email;
-        this.orders = new ArrayList<>();
+        this.orders = new HashSet<>();
     }
 
     public User() {
-        this.orders = new ArrayList<>();
+        this.orders = new HashSet<>();
     }
 
     @Override

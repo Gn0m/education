@@ -4,11 +4,15 @@ import com.example.demo.json_viewer.enums.Status;
 import com.example.demo.json_viewer.model.Order;
 import com.example.demo.json_viewer.model.Product;
 import com.example.demo.json_viewer.model.User;
+import com.example.demo.json_viewer.repo.OrderRepo;
+import com.example.demo.json_viewer.repo.ProductRepo;
 import com.example.demo.json_viewer.repo.UserRepo;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.demo.json_viewer.exceptions.NotFoundUserException.notFoundUser;
 
@@ -16,9 +20,13 @@ import static com.example.demo.json_viewer.exceptions.NotFoundUserException.notF
 public class UserService {
 
     private final UserRepo userRepo;
+    private final OrderRepo orderRepo;
+    private final ProductRepo productRepo;
 
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, OrderRepo orderRepo, ProductRepo productRepo) {
         this.userRepo = userRepo;
+        this.orderRepo = orderRepo;
+        this.productRepo = productRepo;
     }
 
     public User getOne(long id) {
@@ -31,9 +39,14 @@ public class UserService {
         return userRepo.findAll();
     }
 
+    public List<User> getAllPaging(Pageable pageable) {
+        return userRepo.findAll(pageable).getContent();
+    }
+
     public User put(User user) {
         user.getOrders().forEach(order -> order.setUser(user));
-        List<Order> orders = user.getOrders();
+
+        Set<Order> orders = user.getOrders();
         orders.forEach(order ->
                 order.getProducts().forEach(
                         product -> product.setOrder(order)
@@ -60,24 +73,74 @@ public class UserService {
         User user1 = new User("Стрыкало", "strykalo@mail.ru");
         User user2 = new User("Якубович", "ykub@gmail.ru");
 
-        List<Product> products1 = List.of(new Product("Шляпа", new BigDecimal(10)),
-                new Product("Вторая шляпа", new BigDecimal(20)));
-        List<Product> products2 = List.of(new Product("Игрушечный паровоз", new BigDecimal(30)),
-                new Product("Зонтик", new BigDecimal(50)));
-        List<Product> products3 = List.of(new Product("Фотоаппарат", new BigDecimal(120)),
-                new Product("Перчатки", new BigDecimal(20)));
+        Order order1 = new Order(Status.SENT, user1);
+        Order order2 = new Order(Status.CREATED, user1);
+        Order order3 = new Order(Status.DELIVERED, user2);
 
-        Order order1 = new Order(products1, Status.SENT, user1);
-        order1.getProducts().forEach(product -> product.setOrder(order1));
-        Order order2 = new Order(products2, Status.CREATED, user1);
-        order2.getProducts().forEach(product -> product.setOrder(order2));
-        Order order3 = new Order(products3, Status.DELIVERED, user2);
-        order3.getProducts().forEach(product -> product.setOrder(order3));
+        List<Product> products1 = List.of(new Product("Шляпа", new BigDecimal(10), order1),
+                new Product("Вторая шляпа", new BigDecimal(20), order1));
+        List<Product> products2 = List.of(new Product("Игрушечный паровоз", new BigDecimal(30), order2),
+                new Product("Зонтик", new BigDecimal(50), order2));
+        List<Product> products3 = List.of(new Product("Фотоаппарат", new BigDecimal(120), order3),
+                new Product("Перчатки", new BigDecimal(20), order3));
 
-        user1.setOrders(List.of(order1, order2));
-        user2.setOrders(List.of(order3));
-        List<User> users = List.of(user1, user2);
+        List<Order> orderList = List.of(order1, order2, order3);
 
-        userRepo.saveAll(users);
+        order1.setProducts(products1);
+        order2.setProducts(products2);
+        order3.setProducts(products3);
+
+        userRepo.saveAll(List.of(user1, user2));
+
+        orderRepo.saveAll(orderList);
+        productRepo.saveAll(products1);
+        productRepo.saveAll(products2);
+        productRepo.saveAll(products3);
+    }
+
+    public Order putOrder(Order order) {
+        List<Product> products = order.getProducts();
+        products.forEach(product -> {
+            product.setId(0);
+            product.setOrder(order);
+        });
+        Order save = orderRepo.save(order);
+        productRepo.saveAll(products);
+        return save;
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepo.findAll();
+    }
+
+    public Order getOrderById(long id) {
+        return orderRepo.findById(id).orElseThrow(
+                notFoundUser("Заказ с {0} не найден")
+        );
+    }
+
+    public Order updateOrder(long id, Order order) {
+
+        Order bdOrder = orderRepo.findById(id).orElseThrow(
+                notFoundUser("Заказ с {0} не найден"));
+
+        bdOrder.setUser(order.getUser());
+        bdOrder.setStatus(order.getStatus());
+
+        productRepo.deleteAll(bdOrder.getProducts());
+
+        bdOrder.setProducts(order.getProducts());
+        bdOrder.getProducts().forEach(product -> product.setOrder(bdOrder));
+
+        productRepo.saveAll(bdOrder.getProducts());
+
+        return orderRepo.save(bdOrder);
+    }
+
+    public Boolean deleteOrder(long id) {
+        Order order = orderRepo.findById(id).orElseThrow(
+                notFoundUser("Заказ с {0} не найден"));
+        orderRepo.delete(order);
+        return Boolean.TRUE;
     }
 }

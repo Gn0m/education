@@ -12,31 +12,60 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "ordr")
 public class Order {
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.UserDetails.class)
+    @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
     private long id;
-    @JsonView(Views.UserDetails.class)
+    @Setter
+    @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
     private BigDecimal sum;
-    @JsonView(Views.UserDetails.class)
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
+    @OneToMany(mappedBy = "order",cascade = CascadeType.REMOVE)
     private List<Product> products;
-    @JsonView(Views.UserDetails.class)
+    @Setter
+    @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
     private Status status;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonView({Views.UserSummary.class, Views.OrderDetails.class})
     private User user;
 
     public Order() {
     }
 
-    public Order(List<Product> products, Status status, User user) {
-        this.products = products;
+    public Order(Status status, User user) {
         this.status = status;
         this.user = user;
-        sum = new BigDecimal(
-                products.stream().map(Product::getPrice).mapToInt(BigDecimal::intValue).sum());
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public BigDecimal getSum() {
+        return sum;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+        sum = new BigDecimal(
+                this.products.stream().map(Product::getPrice).mapToInt(BigDecimal::intValue).sum());
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
 }

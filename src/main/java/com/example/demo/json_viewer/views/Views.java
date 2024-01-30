@@ -10,4 +10,8 @@ public class Views {
 
     public static class UserDetails {
     }
+
+    public static class OrderDetails {
+
+    }
 }
