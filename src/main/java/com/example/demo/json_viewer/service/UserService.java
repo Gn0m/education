@@ -7,6 +7,7 @@ import com.example.demo.json_viewer.model.User;
 import com.example.demo.json_viewer.repo.OrderRepo;
 import com.example.demo.json_viewer.repo.ProductRepo;
 import com.example.demo.json_viewer.repo.UserRepo;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,9 @@ import static com.example.demo.json_viewer.exceptions.NotFoundUserException.notF
 public class UserService {
 
     private final UserRepo userRepo;
+    @Qualifier(value = "orderRepo")
     private final OrderRepo orderRepo;
+    @Qualifier(value = "productRepo")
     private final ProductRepo productRepo;
 
     public UserService(UserRepo userRepo, OrderRepo orderRepo, ProductRepo productRepo) {

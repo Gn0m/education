@@ -24,7 +24,6 @@ public class ComplexTaskExecutor implements Runnable {
                 executorService.execute(new ComplexTask(barrier));
             }
         }
-
     }
 
     @Override

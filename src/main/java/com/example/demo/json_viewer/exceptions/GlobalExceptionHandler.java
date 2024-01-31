@@ -1,5 +1,6 @@
 package com.example.demo.json_viewer.exceptions;
 
+import com.example.demo.transaction.exception.NotEnoughMoneyException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +32,11 @@ public class GlobalExceptionHandler {
         );
         String errorStr = "Not valid values: " + String.join(",", list);
         return new ResponseEntity<>(new Error(HttpStatus.BAD_REQUEST.value(), errorStr), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Error> catchResourceNotFoundException(NotEnoughMoneyException e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new Error(HttpStatus.NOT_FOUND.value(), e.getMessage()), HttpStatus.NOT_FOUND);
     }
 }

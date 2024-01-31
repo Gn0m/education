@@ -41,13 +41,14 @@ public class DemoApplication {
 //        //Практическое задание - Concurrency
 //        deadlock();
 //        //Практическое задание - Concurrency - синхронизаторы
-        complexTasks();
+//        complexTasks();
 //        //Практическое задание - Stream API - генерация чисел
 //        notebooks();
 //        //Практическое задачние - Stream API - агрегация и объединение результатов
 //        students();
 //        //Практическое задание - Stream API - ForkJoinPool: Рекурсивное вычисление факториала
 //        factorial();
+
     }
 
     private static void bankAccount() {
