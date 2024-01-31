@@ -25,7 +25,7 @@ public class Order {
     @JsonIgnore
     private List<Product> products = new ArrayList<>();
     @OneToMany(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "ordertr_id")
+    @JoinColumn(name = "torder_id")
     private List<ProductInOrder> productInOrders = new ArrayList<>();
 
     public Order() {

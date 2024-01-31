@@ -28,18 +28,12 @@ public class Order {
     @Setter
     @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
     private Status status;
-    @Setter
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonView({Views.UserSummary.class, Views.OrderDetails.class})
-    private User user;
 
     public Order() {
     }
 
-    public Order(Status status, User user) {
+    public Order(Status status) {
         this.status = status;
-        this.user = user;
     }
 
     public long getId() {
@@ -64,8 +58,5 @@ public class Order {
         return status;
     }
 
-    public User getUser() {
-        return user;
-    }
 
 }

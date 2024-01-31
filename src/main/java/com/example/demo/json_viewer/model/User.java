@@ -20,17 +20,18 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.UserSummary.class, Views.UserDetails.class,Views.OrderDetails.class})
+    @JsonView({Views.UserSummary.class, Views.UserDetails.class, Views.OrderDetails.class})
     private long id;
-    @JsonView({Views.UserSummary.class, Views.UserDetails.class,Views.OrderDetails.class})
+    @JsonView({Views.UserSummary.class, Views.UserDetails.class, Views.OrderDetails.class})
     @NotNull(message = "name not null")
     private String name;
-    @JsonView({Views.UserSummary.class, Views.UserDetails.class,Views.OrderDetails.class})
+    @JsonView({Views.UserSummary.class, Views.UserDetails.class, Views.OrderDetails.class})
     @Email(message = "email not valid")
     @NotNull(message = "email not null")
     private String email;
     @JsonView(Views.UserDetails.class)
-    @OneToMany(mappedBy = "user")
+    @OneToMany
+    @JoinColumn(name = "user_id")
     private Set<Order> orders;
 
     public User(String name, String email) {
@@ -41,6 +42,10 @@ public class User {
 
     public User() {
         this.orders = new HashSet<>();
+    }
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
     }
 
     @Override

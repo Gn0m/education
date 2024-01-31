@@ -47,7 +47,6 @@ public class UserService {
     }
 
     public User put(User user) {
-        user.getOrders().forEach(order -> order.setUser(user));
 
         Set<Order> orders = user.getOrders();
         orders.forEach(order ->
@@ -73,12 +72,16 @@ public class UserService {
     }
 
     public void init() {
-        User user1 = new User("Стрыкало", "strykalo@mail.ru");
-        User user2 = new User("Якубович", "ykub@gmail.ru");
 
-        Order order1 = new Order(Status.SENT, user1);
-        Order order2 = new Order(Status.CREATED, user1);
-        Order order3 = new Order(Status.DELIVERED, user2);
+        Order order1 = new Order(Status.SENT);//user1
+        Order order2 = new Order(Status.CREATED);//user1
+        Order order3 = new Order(Status.DELIVERED);//user3
+
+        User user1 = new User("Стрыкало", "strykalo@mail.ru");
+        user1.addOrder(order1);
+        user1.addOrder(order2);
+        User user2 = new User("Якубович", "ykub@gmail.ru");
+        user2.addOrder(order3);
 
         List<Product> products1 = List.of(new Product("Шляпа", new BigDecimal(10), order1),
                 new Product("Вторая шляпа", new BigDecimal(20), order1));
@@ -93,12 +96,14 @@ public class UserService {
         order2.setProducts(products2);
         order3.setProducts(products3);
 
+        orderRepo.saveAll(orderList);
+
         userRepo.saveAll(List.of(user1, user2));
 
-        orderRepo.saveAll(orderList);
         productRepo.saveAll(products1);
         productRepo.saveAll(products2);
         productRepo.saveAll(products3);
+
     }
 
     public Order putOrder(Order order) {
@@ -127,7 +132,6 @@ public class UserService {
         Order bdOrder = orderRepo.findById(id).orElseThrow(
                 notFoundUser("Заказ с {0} не найден"));
 
-        bdOrder.setUser(order.getUser());
         bdOrder.setStatus(order.getStatus());
 
         productRepo.deleteAll(bdOrder.getProducts());
