@@ -23,7 +23,7 @@ public class Order {
     @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
     private BigDecimal sum;
     @JsonView({Views.UserDetails.class, Views.OrderDetails.class})
-    @OneToMany(mappedBy = "order",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "order",cascade = CascadeType.REMOVE,orphanRemoval = true)
     private List<Product> products;
     @Setter
     @JsonView({Views.UserDetails.class, Views.OrderDetails.class})

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(propagation = Propagation.MANDATORY)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository
 public interface ProductInOrdersRepo extends JpaRepository<ProductInOrder, Long> {
 }

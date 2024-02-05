@@ -46,8 +46,10 @@ public class AllModelService {
 
     public Employee update(long id, Employee employee) {
         Optional<Employee> optional = employeeRepo.findById(id);
+
         Employee save = optional.orElseThrow(
                 notFoundUser("Пользователь с {0} не найден", id));
+
         Department department = departmentRepo.findById(save.getDepartment().getId())
                 .orElseThrow(notFoundUser("Департамент с {0} не найден", id));
 

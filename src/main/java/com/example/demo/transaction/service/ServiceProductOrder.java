@@ -55,6 +55,7 @@ public class ServiceProductOrder {
 
         changeBalanceCustomer(customer, sum);
 
+
         order.setTotalAmount(sum);
         order.setCustomer(customer);
 
@@ -74,8 +75,6 @@ public class ServiceProductOrder {
         customer.setBalance(
                 customer.getBalance() - price
         );
-
-        customerRepo.save(customer);
     }
 
 

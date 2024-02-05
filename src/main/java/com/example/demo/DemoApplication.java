@@ -16,6 +16,7 @@ import com.example.demo.stringbuilder.MyBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @SpringBootApplication
+@EnableMethodSecurity
 public class DemoApplication {
 
     public static void main(String[] args) {

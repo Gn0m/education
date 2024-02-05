@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Set;
 
-@Transactional(propagation = Propagation.MANDATORY)
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 @Repository(value = "productRep")
 public interface ProductRepo extends JpaRepository<Product, Long> {
 

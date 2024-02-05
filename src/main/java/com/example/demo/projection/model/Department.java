@@ -1,12 +1,10 @@
 package com.example.demo.projection.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -21,9 +19,6 @@ public class Department {
     @SequenceGenerator(name = "department_generator", sequenceName = "department_seq", allocationSize = 1)
     private long id;
     private String name;
-    @JsonIgnore
-    @OneToMany(mappedBy = "department")
-    private Set<Employee> employeeSet;
 
     @Override
     public String toString() {
