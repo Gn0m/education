@@ -14,9 +14,8 @@ public class MyErrorController implements ErrorController {
 
     @RequestMapping("/error")
     public ResponseEntity<Error> handler(HttpServletRequest request) {
-        int status = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         Exception e = (Exception) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
-        return new ResponseEntity<>(new Error(status, "Token expired. " + e.getMessage()),
+        return new ResponseEntity<>(new Error(HttpStatus.UNAUTHORIZED.value(), "Token expired. " + e.getMessage()),
                 HttpStatus.UNAUTHORIZED);
     }
 }

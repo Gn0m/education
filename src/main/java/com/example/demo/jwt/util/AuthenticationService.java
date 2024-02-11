@@ -90,6 +90,7 @@ public class AuthenticationService {
     }
 
     public User updateRole(long id, UserDtoRole user) {
+
         User bdUser = userRepo.findById(id).orElseThrow(notFoundUser("Пользователь с {0} не найден.", id));
         User save = userRepo
                 .save(updateRole(bdUser, user));

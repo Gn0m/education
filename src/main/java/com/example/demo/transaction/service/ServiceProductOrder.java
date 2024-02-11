@@ -55,7 +55,6 @@ public class ServiceProductOrder {
 
         changeBalanceCustomer(customer, sum);
 
-
         order.setTotalAmount(sum);
         order.setCustomer(customer);
 
